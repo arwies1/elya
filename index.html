@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Elya'ya özür mesajı gönderin!">
+    <title>Beni Affeder misin Elya?</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f4e7f0 0%, #ffe4e1 100%);
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: #ff69b4;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            font-size: 1.25rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-weight: 600;
+            outline: none;
+        }
+
+        #yesBtn {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+        }
+
+        #yesBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.6);
+        }
+
+        #noBtn {
+            background: linear-gradient(45deg, #ccc, #aaa);
+            color: #333;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #noBtn:hover {
+            transform: translateY(-3px);
+        }
+
+        #message {
+            display: none;
+            font-size: 2.5rem;
+            color: #ff69b4;
+            margin-top: 1.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            animation: bounceIn 0.8s ease;
+        }
+
+        .ribbon {
+            position: absolute;
+            font-size: 2rem;
+            animation: fall 4s linear infinite;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            button {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+            #message {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Accessibility */
+        button:focus {
+            outline: 3px solid #ff69b4;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="question">Beni Affeder misin Elya?</h1>
+    <div class="buttons" id="buttons">
+        <button id="yesBtn" aria-label="Evet, affediyorum">Evet</button>
+        <button id="noBtn" aria-label="Hayır, affetmiyorum">Hayır</button>
+    </div>
+    <div id="message">Teşekkürler Elya! 🥰</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const message = document.getElementById('message');
+        const question = document.getElementById('question');
+        const buttons = document.getElementById('buttons');
+
+        // Sound effect (optional, requires an audio file)
+        const clickSound = new Audio('https://www.soundjay.com/buttons/button-09.mp3');
+
+        // No button movement
+        noBtn.addEventListener('mouseenter', () => {
+            const maxX = window.innerWidth - noBtn.offsetWidth;
+            const maxY = window.innerHeight - noBtn.offsetHeight;
+            const newX = Math.random() * maxX;
+            const newY = Math.random() * maxY;
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = `${newX}px`;
+            noBtn.style.top = `${newY}px`;
+        });
+
+        // Yes button action
+        yesBtn.addEventListener('click', () => {
+            clickSound.play().catch(() => console.log('Sound playback failed'));
+            message.style.display = 'block';
+            question.style.display = 'none';
+            buttons.style.display = 'none';
+            createConfetti();
+            createRibbons();
+        });
+
+        // Keyboard accessibility
+        yesBtn.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                yesBtn.click();
+            }
+        });
+
+        noBtn.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                noBtn.dispatchEvent(new Event('mouseenter'));
+            }
+        });
+
+        // Confetti animation
+        function createConfetti() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff69b4', '#ff1493', '#ffe4e1']
+            });
+        }
+
+        // Ribbon animation
+        function createRibbons() {
+            for (let i = 0; i < 50; i++) {
+                const ribbon = document.createElement('div');
+                ribbon.className = 'ribbon';
+                ribbon.textContent = '🎀';
+                ribbon.style.left = `${Math.random() * 100}vw`;
+                ribbon.style.animationDelay = `${Math.random() * 2}s`;
+                document.body.appendChild(ribbon);
+                setTimeout(() => ribbon.remove(), 4000);
+            }
+        }
+
+        // Preload sound
+        clickSound.load();
+    </script>
+</body>
+</html>
